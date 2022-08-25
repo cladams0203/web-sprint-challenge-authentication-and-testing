@@ -58,7 +58,7 @@ router.post("/register", uniqueUsername, async (req, res) => {
   }
 });
 
-router.post("/login", usernameExists, async (req, res) => {
+router.post("/login", async (req, res) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -83,10 +83,13 @@ router.post("/login", usernameExists, async (req, res) => {
       the response body should include a string exactly as follows: "invalid credentials".
   */
   try {
-    const {
-      body: { password },
-      user,
-    } = req;
+    // const {
+    //   body: { password },
+    //   user,
+    // } = req;
+    const { username, password } = req.body;
+    const user = await User.getByUsername(username);
+    if (!user) res.status(404);
     if (bcrypt.compareSync(password, user.password)) {
       res.json({ message: `welcome, ${user.username}`, token: generateToken(user) });
     } else {
